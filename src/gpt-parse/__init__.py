@@ -24,7 +24,6 @@ def RecursiveInput(message_history):
   ProcessInput(new_input, message_history)
   RecursiveInput(message_history)
   
-
 def GenerateSearchQueries(message_history):
   if not message_history[-1].content.startswith("search-queries:"):
     return 

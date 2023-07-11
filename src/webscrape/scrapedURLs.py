@@ -14,10 +14,10 @@ def scrape_urls(urls):
 
   scraped_info = []
   for url in urls:
-    print(url)
+    # print(url)
     
     soup = trafilatura.fetch_url(url)
-    print(soup)
+    # print(soup)
 
     result = trafilatura.extract(soup)
     scraped_info.append({
@@ -36,6 +36,7 @@ if __name__ == "__main__":
   # Scrape the information from the URLs
   scraped_info = scrape_urls(urls)
 
+  # print(scraped_info.keys())
   # Print the scraped information
-  for info in scraped_info.keys():
-    print(scraped_info[info])
+  for info in scraped_info:
+    print(info['url'])

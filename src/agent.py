@@ -6,16 +6,21 @@ MAX_DEPTH = 1
 MAX_SUBTASKS = 3
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
+def user_answer(message: str)->list[str]:
+    x = openai.ChatCompletion.create(
+        model = "gpt-3.5-turbo",
+        messages=[{"role":"user", "content":f'Can this be answered the original prompter given their current knowledge: "{message}"Only respond with yes or no.'}]
+    ).choices[0].message.content
+    x=x.lower()
+    if(x[0] == 'y'):
+        return True
+    return False
+
 def parse_tasks(message: str)->list[str]:
+    message = message.split('\n')
     tasks = []
-    for i in range(len(message)):
-        #Double Digits!
-        if message[i] == '.' and ord(message[i-1]) - ord('0') == len(tasks)+1:
-            if len(tasks) > MAX_SUBTASKS:
-                break
-            tasks.append("")
-        elif len(tasks) != 0:
-            tasks[len(tasks)-1] += message[i]
+    for i in range(1, min(MAX_SUBTASKS,len(message)-1)):
+        tasks.append(message[i])
     return tasks
 
 def summary(message: str)->str:
@@ -56,10 +61,14 @@ class Agent:
         return result.choices[0].message.content
 
     def run(self) -> str:
-        print(f'Running task {self.prompt}...')
-        if self.for_user():
+        print(f'Running task with depth {self.depth}...')
+        if user_answer(self.prompt):
             return input(f'User Request {self.prompt}')
         elif self.is_leaf():
+            if user_answer(self.prompt):
+                x = input(f"USER REQUEST: {self.prompt}")
+                return x
+
             key_words = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[{"role":"user", "content": f'List 5 keywords from this prompt: {self.prompt}'}]
@@ -78,7 +87,7 @@ class Agent:
             subtasks = self.generate_subtasks()
             responses = []
             for task in subtasks:
-                responses.append(Agent(task, self.depth+1).run())
+                responses.append(Agent(f"This was the original Prompt: '{self.prompt}' \n Solve this subtask:" + task, self.depth+1).run())
             return self.merge_queries(responses)
 
     

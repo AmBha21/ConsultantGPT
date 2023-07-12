@@ -1,5 +1,5 @@
 import trafilatura
-from urls import google_custom_search
+from webscrape.urls import google_custom_search
 
 def scrape_urls(urls):
   """
@@ -22,15 +22,16 @@ def scrape_urls(urls):
     result = trafilatura.extract(soup)
     scraped_info.append({
       "url": url,
-    #   "text": result,
+      "text": result,
     })
-
   return scraped_info
 
 
 if __name__ == "__main__":
   # Get the URLs from the Google Custom Search API
-  results = google_custom_search("steps to enter the electric manufacturing industry")
+  results = google_custom_search("""1. Electric vehicle market
+2. Market trends
+3. Target customer demographics""", 2)
   urls = [result["link"] for result in results]
 
   # Scrape the information from the URLs
@@ -40,3 +41,4 @@ if __name__ == "__main__":
   # Print the scraped information
   for info in scraped_info:
     print(info['url'])
+    print(info['text'])

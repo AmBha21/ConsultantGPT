@@ -1,6 +1,9 @@
 import openai
 import os
-import webscrape
+import sys
+# from webscrape import urls, scrapedURLs
+import importlib
+webscrape = importlib.import_module("webscrape")
 
 MAX_DEPTH = 2
 MAX_SUBTASKS = 3

@@ -8,8 +8,12 @@ app = Flask(__name__)
 @app.route("/response")
 def get_response():
     prompt = request.args.get('prompt')
-    agent = Agent(prompt, 0)
-    return jsonify(agent.run())
+    
+    if __name__ == "__main__":
+      agent = Agent(prompt, 0)
+      return jsonify(agent.run())
+    else:
+      return "This function can only be run in the main thread."
   
 if __name__ == "__main__":
   app.run()

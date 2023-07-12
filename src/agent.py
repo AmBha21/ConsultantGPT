@@ -90,6 +90,14 @@ class Agent:
 
     
 if __name__ == '__main__':
-    prompt = "My company is looking into entering electronics manufacturing. We currently produce $2 billion in revenue a year from our plastics production. However, we are not sure what the competition looks like and whether or not we should enter. We are very knowledgable about our finances and expertise. Should we enter this market?"
+    prompt = '''
+        My company is looking into entering into the children's toy manufacturing market. 
+        We currently produce $20 million in revenue a year from our plastics production. 
+        However, we are not sure what the competition looks like and whether or not we should enter. 
+        We are very knowledgable about our finances and expertise. 
+        Should we enter this market? 
+        What do the numbers within this market tell us?
+        Help us understand the market size and the competition so we can make a decision.
+    '''
     test = Agent(prompt, 0)
     print(test.run())

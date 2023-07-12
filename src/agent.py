@@ -2,7 +2,7 @@ import openai
 import os
 import webscrape
 
-MAX_DEPTH = 1
+MAX_DEPTH = 2
 MAX_SUBTASKS = 3
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
@@ -44,7 +44,7 @@ class Agent:
     def generate_subtasks(self) -> list[str]:
         result = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[{"role":"user", "content": f'Create a list of topics to research to answer: {self.prompt}'}]
+            messages=[{"role":"user", "content": f'Create a list of topics to research to answer: "{self.prompt}". Make sure to make some of these easily answerable by the original prompter.'}]
         )
         tasks = result.choices[0].message.content
         return parse_tasks(tasks)
@@ -62,16 +62,14 @@ class Agent:
 
     def run(self) -> str:
         print(f'Running task with depth {self.depth}...')
-        if user_answer(self.prompt):
-            return input(f'User Request {self.prompt}')
-        elif self.is_leaf():
+        if self.is_leaf():
             if user_answer(self.prompt):
-                x = input(f"USER REQUEST: {self.prompt}")
+                x = input(f"USER REQUEST: {self.prompt}\n")
                 return x
 
             key_words = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=[{"role":"user", "content": f'List 5 keywords from this prompt: {self.prompt}'}]
+                messages=[{"role":"user", "content": f'List 5 keywords to Google search for information about: {self.prompt}'}]
             ).choices[0].message.content
             articles = webscrape.urls.google_custom_search(key_words, 3)
             urls = [result["link"] for result in articles]
@@ -79,7 +77,7 @@ class Agent:
             context = ""
             for i in range(len(data)):
                 if data[i]["text"] != None:
-                    context += summary(data[i]["text"][0:min(len(data[i]["text"]), 2000)]) + '\n';
+                    context += summary(data[i]["text"][0:min(len(data[i]["text"]), 4096)]) + '\n';
             
             result = summary(context)
             return result
@@ -92,5 +90,6 @@ class Agent:
 
     
 if __name__ == '__main__':
-    test = Agent("My company is looking into manufacturing electric vehicles. Currently we produce plastics and small electronics. We estimate a 30% profit margin per car sold. What business strategies should we run for production and advertising? Be concrete.", 0)
+    prompt = "My company is looking into entering electronics manufacturing. We currently produce $2 billion in revenue a year from our plastics production. However, we are not sure what the competition looks like and whether or not we should enter. We are very knowledgable about our finances and expertise. Should we enter this market?"
+    test = Agent(prompt, 0)
     print(test.run())

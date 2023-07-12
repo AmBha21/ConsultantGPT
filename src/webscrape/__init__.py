@@ -1,1 +1,0 @@
-from webscrape import scrapedURLs, urls

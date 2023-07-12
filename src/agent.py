@@ -1,9 +1,7 @@
 import openai
 import os
-import sys
-# from webscrape import urls, scrapedURLs
-import importlib
-webscrape = importlib.import_module("webscrape")
+# import webscrape
+from .webscrape import getUrls, scrapedURLs
 
 MAX_DEPTH = 2
 MAX_SUBTASKS = 3
@@ -74,9 +72,9 @@ class Agent:
                 model="gpt-3.5-turbo",
                 messages=[{"role":"user", "content": f'List 5 keywords to Google search for information about: {self.prompt}'}]
             ).choices[0].message.content
-            articles = webscrape.urls.google_custom_search(key_words, 3)
+            articles = getUrls.google_custom_search(key_words, 3)
             urls = [result["link"] for result in articles]
-            data = webscrape.scrapedURLs.scrape_urls(urls)
+            data = scrapedURLs.scrape_urls(urls)
             context = ""
             for i in range(len(data)):
                 if data[i]["text"] != None:

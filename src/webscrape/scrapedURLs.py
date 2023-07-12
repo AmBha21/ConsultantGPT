@@ -1,5 +1,5 @@
 import trafilatura
-from webscrape.urls import google_custom_search
+from .getUrls import google_custom_search
 
 def scrape_urls(urls):
   """
